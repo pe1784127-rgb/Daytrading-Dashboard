@@ -123,7 +123,12 @@
       .terms{grid-template-columns:1fr}
       header{flex-direction:column}
     }
-  </style>
+  
+    /* Lernchart v2 */
+    .learn-chart{background:#fff;color:#111;border-radius:16px;padding:16px;overflow:hidden}
+    .learn-chart-head{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:8px}.learn-chart h2{color:#111;margin:0}.learn-chart .sub{color:#555;font-size:13px}
+    .chart-svg{width:100%;height:auto;display:block;background:#fff}.chart-svg text{font-family:Inter,system-ui,sans-serif;fill:#111}.chart-svg .grid{stroke:#e8e8e8;stroke-width:1}.chart-svg .lvl{stroke:#777;stroke-width:1;stroke-dasharray:5 5}.chart-svg .bull{stroke:#1677ff;fill:#1677ff}.chart-svg .bear{stroke:#111;fill:#111}.chart-svg .wick{stroke-width:1.5}.chart-svg .zone-bsl{fill:#ffeded}.chart-svg .zone-ssl{fill:#e8f6f2}.chart-svg .zone-fvg{fill:#fff1d6}.chart-legend{display:flex;gap:16px;flex-wrap:wrap;color:#333;font-size:12px;margin-top:8px}.dot{width:10px;height:10px;display:inline-block;margin-right:5px}.dot.blue{background:#1677ff}.dot.black{background:#111}
+</style>
 </head>
 <body>
   <div class="wrap">
@@ -141,6 +146,23 @@
     </header>
 
     <section class="grid">
+      <div class="card span-12 learn-chart">
+        <div class="learn-chart-head"><div><h2>📊 Lern-Chart – Marktstruktur & Liquidity</h2><div class="sub">Schematisches Übungsbeispiel • Blau = positive Candle • Schwarz = negative Candle</div></div><div class="sub">Nicht als Live-Signal gedacht</div></div>
+        <svg class="chart-svg" viewBox="0 0 1100 430" role="img" aria-label="Übungschart mit HH HL LH LL BSL SSL Liquidity Sweep und FVG">
+          <line class="grid" x1="55" y1="80" x2="1050" y2="80"/><line class="grid" x1="55" y1="160" x2="1050" y2="160"/><line class="grid" x1="55" y1="240" x2="1050" y2="240"/><line class="grid" x1="55" y1="320" x2="1050" y2="320"/>
+          <rect class="zone-ssl" x="70" y="292" width="205" height="28"/><text x="90" y="312" font-size="15" font-weight="700">SSL – Sell Side Liquidity</text>
+          <rect class="zone-bsl" x="360" y="80" width="235" height="28"/><text x="380" y="100" font-size="15" font-weight="700">BSL – Buy Side Liquidity</text>
+          <rect class="zone-fvg" x="690" y="185" width="120" height="55"/><text x="710" y="207" font-size="15" font-weight="700">FVG</text><text x="710" y="225" font-size="12">Fair Value Gap</text>
+          <line class="lvl" x1="360" y1="108" x2="595" y2="108"/><line class="lvl" x1="70" y1="320" x2="275" y2="320"/>
+          <g id="candles"></g>
+          <text x="210" y="135" font-size="17" font-weight="800">HH</text><text x="290" y="255" font-size="17" font-weight="800">HL</text><text x="535" y="62" font-size="17" font-weight="800">HH</text><text x="630" y="150" font-size="17" font-weight="800">LH</text><text x="835" y="325" font-size="17" font-weight="800">LL</text><text x="930" y="210" font-size="17" font-weight="800">LH</text>
+          <text x="575" y="35" font-size="15" font-weight="800">Liquidity Sweep</text><path d="M625 42 L590 73" stroke="#111" fill="none" stroke-width="1.5"/><path d="M590 73 l5 -10 l3 8 z" fill="#111"/>
+          <text x="55" y="385" font-size="13">09:00</text><text x="285" y="385" font-size="13">11:00</text><text x="515" y="385" font-size="13">13:00</text><text x="745" y="385" font-size="13">15:00</text><text x="975" y="385" font-size="13">17:00</text>
+          <text x="55" y="415" font-size="13" font-weight="700">Merke: Struktur → Liquidity → Sweep → Bestätigung. Nicht raten, sondern auf Bedingungen warten.</text>
+        </svg>
+        <div class="chart-legend"><span><i class="dot blue"></i>Bullish / positive Candle</span><span><i class="dot black"></i>Bearish / negative Candle</span><span><b>HH/HL</b> bullishe Struktur</span><span><b>LH/LL</b> bearishe Struktur</span></div>
+      </div>
+
       <div class="card span-4">
         <h2>🧠 Mein aktueller Stand</h2>
         <p>Du kennst schon die Grundidee von Marktstruktur, Liquidity, Long/Short und Fair Value Gaps.</p>
@@ -307,6 +329,9 @@
       localStorage.setItem(ruleKey, rule.value);
       alert('Regel gespeichert.');
     }
-  </script>
+  
+    // Schematische Candles für den Lern-Chart (keine Live-Marktdaten)
+    (()=>{const g=document.getElementById('candles');if(!g)return;const vals=[300,285,260,230,205,170,145,180,215,195,165,130,105,125,160,190,215,185,155,130,105,90,65,105,145,175,205,240,270,300,325,305,275,245,220,195,225,255,285,260,230,205,180,150,125,145];let x=78,prev=310;vals.forEach((v,i)=>{const up=v<prev;const top=Math.min(v,prev),bot=Math.max(v,prev),h=Math.max(8,bot-top);const cls=up?'bull':'bear';const wick=document.createElementNS('http://www.w3.org/2000/svg','line');wick.setAttribute('x1',x+5);wick.setAttribute('x2',x+5);wick.setAttribute('y1',Math.max(45,top-13));wick.setAttribute('y2',Math.min(355,bot+13));wick.setAttribute('class',cls+' wick');g.appendChild(wick);const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',x);r.setAttribute('y',top);r.setAttribute('width',10);r.setAttribute('height',h);r.setAttribute('class',cls);g.appendChild(r);prev=v;x+=20;});})();
+</script>
 </body>
 </html>
