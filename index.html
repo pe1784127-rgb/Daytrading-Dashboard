@@ -248,9 +248,6 @@
   </div>
 
   <script>
-    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-      navigator.serviceWorker.register('./sw.js').catch(()=>{});
-    }
 
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
       const hint = document.getElementById('installHint');
