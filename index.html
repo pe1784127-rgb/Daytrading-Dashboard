@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Trading Dashboard" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Daytrading Dashboard</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#121821;
+      --panel2:#171f2b;
+      --text:#eef2f7;
+      --muted:#96a2b4;
+      --accent:#67e8f9;
+      --green:#4ade80;
+      --red:#fb7185;
+      --yellow:#facc15;
+      --border:#253044;
+      --shadow:0 18px 45px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{min-height:100%}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(103,232,249,.08), transparent 28%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.5;
+      padding-top:env(safe-area-inset-top);
+      padding-bottom:env(safe-area-inset-bottom);
+    }
+    .wrap{max-width:1180px;margin:auto;padding:28px 18px 60px}
+    header{
+      display:flex;justify-content:space-between;align-items:flex-start;
+      gap:18px;margin-bottom:24px;
+    }
+    h1{margin:0;font-size:clamp(28px,4vw,46px);letter-spacing:-.03em}
+    h2{font-size:19px;margin:0 0 14px}
+    p{margin:0;color:var(--muted)}
+    .tag{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 12px;border:1px solid var(--border);border-radius:999px;
+      color:var(--muted);background:rgba(255,255,255,.02);font-size:13px;
+    }
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .card{
+      background:linear-gradient(180deg,var(--panel),#0f151d);
+      border:1px solid var(--border);border-radius:18px;
+      padding:18px;box-shadow:var(--shadow);
+    }
+    .span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+    .stat{font-size:28px;font-weight:800;margin-top:6px}
+    .green{color:var(--green)} .red{color:var(--red)} .cyan{color:var(--accent)} .yellow{color:var(--yellow)}
+    .list{display:grid;gap:10px}
+    .item{
+      padding:12px;border:1px solid var(--border);border-radius:12px;
+      background:var(--panel2);
+    }
+    .item strong{display:block;margin-bottom:3px}
+    .mini{font-size:13px;color:var(--muted)}
+    .terms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .term{
+      border:1px solid var(--border);border-radius:12px;padding:12px;background:#111822;
+    }
+    .term b{color:#fff}
+    .term span{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+    label.check{
+      display:flex;align-items:flex-start;gap:10px;padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;
+    }
+    label.check:last-child{border-bottom:0}
+    input[type="checkbox"]{margin-top:4px;accent-color:var(--accent);transform:scale(1.15)}
+    textarea,input[type="text"]{
+      width:100%;background:#0c1118;border:1px solid var(--border);
+      color:var(--text);border-radius:12px;padding:12px;font:inherit;outline:none;
+    }
+    textarea{min-height:120px;resize:vertical}
+    textarea:focus,input[type="text"]:focus{border-color:#3d7184}
+    button{
+      border:0;border-radius:10px;padding:10px 14px;font-weight:700;
+      cursor:pointer;background:var(--accent);color:#062028;
+    }
+    button.secondary{background:#202a39;color:var(--text);border:1px solid var(--border)}
+    .actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .progress{
+      height:10px;border-radius:999px;overflow:hidden;background:#202937;margin-top:10px
+    }
+    .progress > div{
+      height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--green));
+      transition:.25s;
+    }
+    .roadmap{display:flex;gap:8px;flex-wrap:wrap}
+    .step{
+      padding:9px 11px;border:1px solid var(--border);border-radius:10px;
+      color:var(--muted);font-size:13px;background:#10161f;
+    }
+    .step.done{border-color:rgba(74,222,128,.5);color:var(--green)}
+    .step.current{border-color:rgba(103,232,249,.6);color:var(--accent)}
+    .warning{
+      padding:12px;border-left:3px solid var(--yellow);
+      background:rgba(250,204,21,.06);border-radius:8px;color:#d5dbe4;font-size:14px;
+    }
+    .install{
+      margin-bottom:16px;
+      padding:12px 14px;
+      border:1px solid rgba(103,232,249,.25);
+      background:rgba(103,232,249,.05);
+      border-radius:14px;
+      color:#dbeafe;
+      font-size:14px;
+    }
+    footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+    @media(max-width:850px){
+      .span-4,.span-6,.span-8{grid-column:span 12}
+      .terms{grid-template-columns:1fr}
+      header{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="install" id="installHint">
+      iPad: In Safari auf <b>Teilen</b> → <b>Zum Home-Bildschirm</b>. Danach startet das Dashboard wie eine eigene App.
+    </div>
+
+    <header>
+      <div>
+        <div class="tag">📈 Daytrading Lern-Dashboard</div>
+        <h1>Guten Morgen, Trader.</h1>
+        <p id="dateText">Heute zählt nicht Gewinn, sondern saubere Ausführung.</p>
+      </div>
+      <div class="tag">Stand: <span id="today"></span></div>
+    </header>
+
+    <section class="grid">
+      <div class="card span-4">
+        <h2>🧠 Mein aktueller Stand</h2>
+        <p>Du kennst schon die Grundidee von Marktstruktur, Liquidity, Long/Short und Fair Value Gaps.</p>
+        <div class="progress"><div id="progressBar"></div></div>
+        <div class="mini" id="progressText" style="margin-top:8px">0 % Tagesvorbereitung erledigt</div>
+      </div>
+
+      <div class="card span-4">
+        <h2>🎯 Heutiger Fokus</h2>
+        <div class="stat cyan">1 Setup verstehen</div>
+        <p>Nicht 20 Strategien gleichzeitig. Erst Marktstruktur + Liquidity + Bestätigung sauber lesen.</p>
+      </div>
+
+      <div class="card span-4">
+        <h2>⚠️ Wichtig</h2>
+        <div class="warning">
+          Kein Echtgeld, solange du Regeln, Stop-Loss und Risiko noch nicht sicher beherrschst.
+          Erst Charts lesen, dann Paper Trading.
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <h2>✅ Morgen-Checkliste</h2>
+        <div id="checklist">
+          <label class="check"><input type="checkbox" data-key="structure"> <span><strong>Marktstruktur prüfen</strong><span class="mini">HH/HL = eher bullish, LH/LL = eher bearish.</span></span></label>
+          <label class="check"><input type="checkbox" data-key="liquidity"> <span><strong>Liquidity markieren</strong><span class="mini">BSL über markanten Highs, SSL unter markanten Lows.</span></span></label>
+          <label class="check"><input type="checkbox" data-key="sweep"> <span><strong>Auf Sweep achten</strong><span class="mini">Wurde Liquidity nur abgeholt oder bricht der Markt wirklich weiter?</span></span></label>
+          <label class="check"><input type="checkbox" data-key="fvg"> <span><strong>FVG suchen</strong><span class="mini">Gibt es einen ineffizienten Bereich, in den Preis zurücklaufen könnte?</span></span></label>
+          <label class="check"><input type="checkbox" data-key="risk"> <span><strong>Risiko festlegen</strong><span class="mini">Vor dem Trade wissen, wo der Trade ungültig ist.</span></span></label>
+          <label class="check"><input type="checkbox" data-key="patience"> <span><strong>Kein Setup = kein Trade</strong><span class="mini">Nicht aus Langeweile handeln.</span></span></label>
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <h2>📚 Die wichtigsten Begriffe</h2>
+        <div class="terms">
+          <div class="term"><b class="green">Bullish</b><span>Der Markt zeigt eher Stärke nach oben.</span></div>
+          <div class="term"><b class="red">Bearish</b><span>Der Markt zeigt eher Stärke nach unten.</span></div>
+          <div class="term"><b>Long</b><span>Du setzt auf steigende Kurse.</span></div>
+          <div class="term"><b>Short</b><span>Du setzt auf fallende Kurse. Du verkaufst zuerst und kaufst später günstiger zurück.</span></div>
+          <div class="term"><b>HH / HL</b><span>Higher High + Higher Low. Typische bullishe Struktur.</span></div>
+          <div class="term"><b>LH / LL</b><span>Lower High + Lower Low. Typische bearishe Struktur.</span></div>
+          <div class="term"><b>BSL</b><span>Buy-Side Liquidity: oft über markanten Highs. Dort können viele Buy-Stops liegen.</span></div>
+          <div class="term"><b>SSL</b><span>Sell-Side Liquidity: oft unter markanten Lows. Dort können viele Sell-Stops liegen.</span></div>
+          <div class="term"><b>Liquidity Sweep</b><span>Preis holt Stops/Liquidity ab und reagiert danach deutlich zurück.</span></div>
+          <div class="term"><b>FVG</b><span>Fair Value Gap: schneller Preisbereich mit wenig Handel, den der Markt später teilweise wieder anlaufen kann.</span></div>
+          <div class="term"><b>Stop-Loss</b><span>Schließt deinen Trade automatisch, wenn deine Idee klar falsch liegt.</span></div>
+          <div class="term"><b>Take-Profit</b><span>Schließt deinen Trade automatisch am geplanten Gewinnziel.</span></div>
+          <div class="term"><b>Buy Stop</b><span>Kauforder oberhalb des aktuellen Preises. Wird ausgelöst, wenn Preis nach oben läuft.</span></div>
+          <div class="term"><b>Sell Stop</b><span>Verkaufsorder unterhalb des aktuellen Preises. Wird ausgelöst, wenn Preis nach unten läuft.</span></div>
+        </div>
+      </div>
+
+      <div class="card span-8">
+        <h2>🧩 Einfaches Setup, das wir lernen</h2>
+        <div class="list">
+          <div class="item"><strong>1. Richtung lesen</strong><span class="mini">Erst Struktur: bullish, bearish oder unklar?</span></div>
+          <div class="item"><strong>2. Liquidity markieren</strong><span class="mini">Wo liegen auffällige Highs/Lows und mögliche Stops?</span></div>
+          <div class="item"><strong>3. Sweep abwarten</strong><span class="mini">Der Markt nimmt Liquidity und zeigt danach Reaktion.</span></div>
+          <div class="item"><strong>4. Bestätigung suchen</strong><span class="mini">Zum Beispiel Strukturwechsel / starke Reaktion / FVG-Rücklauf.</span></div>
+          <div class="item"><strong>5. Risiko zuerst planen</strong><span class="mini">Entry, Stop und Ziel stehen fest, bevor du klickst.</span></div>
+        </div>
+      </div>
+
+      <div class="card span-4">
+        <h2>🛣️ Lernweg</h2>
+        <div class="roadmap">
+          <div class="step done">1. Long / Short</div>
+          <div class="step done">2. HH / HL / LH / LL</div>
+          <div class="step done">3. Liquidity</div>
+          <div class="step done">4. BSL / SSL</div>
+          <div class="step current">5. Sweeps verstehen</div>
+          <div class="step">6. FVG</div>
+          <div class="step">7. Entry-Modell</div>
+          <div class="step">8. Risk Management</div>
+          <div class="step">9. Backtesting</div>
+          <div class="step">10. Paper Trading</div>
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <h2>📝 Trading-Journal</h2>
+        <input id="journalTitle" type="text" placeholder="z. B. EUR/USD – Liquidity Sweep" />
+        <textarea id="journal" placeholder="Was habe ich heute gesehen? Warum wäre ein Trade gut oder schlecht gewesen?"></textarea>
+        <div class="actions">
+          <button onclick="saveJournal()">Speichern</button>
+          <button class="secondary" onclick="clearJournal()">Leeren</button>
+        </div>
+        <div id="saveStatus" class="mini" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card span-6">
+        <h2>📌 Meine wichtigste Regel</h2>
+        <textarea id="rule" placeholder="Schreibe hier deine wichtigste Trading-Regel hinein..."></textarea>
+        <div class="actions">
+          <button onclick="saveRule()">Regel speichern</button>
+        </div>
+        <div class="mini" style="margin-top:10px">Beispiel: „Ich trade nur, wenn mein Setup komplett da ist.“</div>
+      </div>
+    </section>
+
+    <footer>
+      Lern-Dashboard für Daytrading • verstehen → backtesten → Paper Trading → erst später Echtgeld
+    </footer>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    }
+
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      const hint = document.getElementById('installHint');
+      if (hint) hint.style.display = 'none';
+    }
+
+    const today = new Date();
+    const dateKey = today.toISOString().slice(0,10);
+    const pretty = today.toLocaleDateString('de-DE', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+    document.getElementById('today').textContent = pretty;
+    document.getElementById('dateText').textContent = 'Heute ist ' + pretty + '. Fokus: ruhig lesen, nicht raten.';
+
+    const checks = [...document.querySelectorAll('#checklist input[type="checkbox"]')];
+    const stateKey = 'tradingChecklist-' + dateKey;
+    const old = JSON.parse(localStorage.getItem(stateKey) || '{}');
+
+    checks.forEach(c => {
+      c.checked = !!old[c.dataset.key];
+      c.addEventListener('change', () => {
+        const state = {};
+        checks.forEach(x => state[x.dataset.key] = x.checked);
+        localStorage.setItem(stateKey, JSON.stringify(state));
+        updateProgress();
+      });
+    });
+
+    function updateProgress(){
+      const done = checks.filter(c => c.checked).length;
+      const pct = Math.round(done / checks.length * 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + ' % Tagesvorbereitung erledigt';
+    }
+    updateProgress();
+
+    const journalKey = 'tradingJournal-' + dateKey;
+    const titleKey = 'tradingJournalTitle-' + dateKey;
+    document.getElementById('journal').value = localStorage.getItem(journalKey) || '';
+    document.getElementById('journalTitle').value = localStorage.getItem(titleKey) || '';
+
+    function saveJournal(){
+      localStorage.setItem(journalKey, document.getElementById('journal').value);
+      localStorage.setItem(titleKey, document.getElementById('journalTitle').value);
+      document.getElementById('saveStatus').textContent = 'Gespeichert für ' + dateKey + ' ✓';
+    }
+    function clearJournal(){
+      document.getElementById('journal').value = '';
+      document.getElementById('journalTitle').value = '';
+      localStorage.removeItem(journalKey);
+      localStorage.removeItem(titleKey);
+      document.getElementById('saveStatus').textContent = 'Heutiger Eintrag wurde geleert.';
+    }
+
+    const ruleKey = 'tradingMainRule';
+    const rule = document.getElementById('rule');
+    rule.value = localStorage.getItem(ruleKey) || 'Ich trade nur, wenn mein Setup komplett da ist. Kein Setup = kein Trade.';
+    function saveRule(){
+      localStorage.setItem(ruleKey, rule.value);
+      alert('Regel gespeichert.');
+    }
+  </script>
+</body>
+</html>
